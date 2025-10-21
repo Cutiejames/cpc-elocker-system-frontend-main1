@@ -18,54 +18,29 @@
             <th>Gender</th>
             <th>Email</th>
             <th>Role</th>
-            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
 
         <tbody>
           <tr v-for="student in students" :key="student.user_id">
-            <!-- ✅ Show user_id instead of username -->
             <td>{{ student.user_id }}</td>
-
-            <!-- Student ID -->
             <td>{{ student.stud_id }}</td>
-
-            <!-- Full name (already concatenated in backend) -->
             <td>{{ student.full_name }}</td>
-
-            <!-- Gender -->
             <td>{{ student.gender }}</td>
-
-            <!-- Email -->
             <td>{{ student.email }}</td>
-
-            <!-- Role -->
             <td>{{ student.role }}</td>
 
-            <!-- Status -->
-            <td>
-              <span
-                class="badge"
-                :class="student.status === 'active' ? 'bg-success' : 'bg-secondary'"
-              >
-                {{ student.status || 'unknown' }}
-              </span>
-            </td>
-
-            <!-- Actions -->
             <td>
               <div class="d-flex gap-2 justify-content-center">
                 <button
                   class="btn btn-sm btn-warning"
-                  :disabled="student.status === 'disabled'"
                   @click="disableAccount(student)"
                 >
                   Disable
                 </button>
                 <button
                   class="btn btn-sm btn-success"
-                  :disabled="student.status === 'active'"
                   @click="enableAccount(student)"
                 >
                   Enable
@@ -80,9 +55,8 @@
             </td>
           </tr>
 
-          <!-- Empty state -->
           <tr v-if="students.length === 0">
-            <td colspan="8" class="text-muted fst-italic py-4">
+            <td colspan="7" class="text-muted fst-italic py-4">
               No students found for this course
             </td>
           </tr>
@@ -149,8 +123,6 @@ export default {
           `http://localhost:3001/courses/${this.courseId}/students`,
           { params: { page: 1, limit: 50 } }
         );
-
-        // Adjust depending on backend structure
         this.students = res.data.students || res.data;
       } catch (err) {
         console.error("Error fetching students:", err);
@@ -161,7 +133,6 @@ export default {
     // ✅ Disable account
     async disableAccount(student) {
       if (!confirm(`Disable account for User ID ${student.user_id}?`)) return;
-
       try {
         const res = await axios.put(
           `http://localhost:3001/users/${student.user_id}/disable`
@@ -177,7 +148,6 @@ export default {
     // ✅ Enable account
     async enableAccount(student) {
       if (!confirm(`Enable account for User ID ${student.user_id}?`)) return;
-
       try {
         const res = await axios.put(
           `http://localhost:3001/users/${student.user_id}/enable`
@@ -196,7 +166,6 @@ export default {
       this.newPassword = "";
       const modalEl = document.getElementById("resetPasswordModal");
       this.resetPasswordModal = new bootstrap.Modal(modalEl);
-
       modalEl.addEventListener(
         "hidden.bs.modal",
         () => {
@@ -204,7 +173,6 @@ export default {
         },
         { once: true }
       );
-
       this.resetPasswordModal.show();
     },
 
@@ -214,7 +182,6 @@ export default {
         alert("Password cannot be empty!");
         return;
       }
-
       if (this.newPassword.length < 6) {
         alert("Password must be at least 6 characters long");
         return;
