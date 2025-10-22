@@ -1,13 +1,16 @@
 <template>
   <div class="container py-4">
+    <!-- Back Button -->
     <button class="btn btn-outline-primary mb-3" @click="$router.back()">
       <i class="bi bi-arrow-left me-2"></i> Back
     </button>
 
+    <!-- Page Title -->
     <h2 class="fw-bold text-primary mb-4">
       Students in {{ courseName }}
     </h2>
 
+    <!-- Student Table -->
     <div class="table-container shadow-lg bg-white rounded-4 p-3">
       <table class="table table-hover align-middle text-center mb-0">
         <thead>
@@ -18,6 +21,7 @@
             <th>Gender</th>
             <th>Email</th>
             <th>Role</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -30,18 +34,28 @@
             <td>{{ student.gender }}</td>
             <td>{{ student.email }}</td>
             <td>{{ student.role }}</td>
+            <td>
+              <span
+                class="badge"
+                :class="student.is_disabled ? 'bg-danger' : 'bg-success'"
+              >
+                {{ student.is_disabled ? 'Disabled' : 'Active' }}
+              </span>
+            </td>
 
             <td>
               <div class="d-flex gap-2 justify-content-center">
                 <button
                   class="btn btn-sm btn-warning"
                   @click="disableAccount(student)"
+                  :disabled="student.is_disabled"
                 >
                   Disable
                 </button>
                 <button
                   class="btn btn-sm btn-success"
                   @click="enableAccount(student)"
+                  :disabled="!student.is_disabled"
                 >
                   Enable
                 </button>
@@ -55,8 +69,9 @@
             </td>
           </tr>
 
+          <!-- No students found -->
           <tr v-if="students.length === 0">
-            <td colspan="7" class="text-muted fst-italic py-4">
+            <td colspan="8" class="text-muted fst-italic py-4">
               No students found for this course
             </td>
           </tr>
@@ -72,7 +87,11 @@
             <h5 class="modal-title">
               Reset Password for User ID: {{ selectedStudent.user_id }}
             </h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
           </div>
           <div class="modal-body">
             <input
@@ -83,7 +102,9 @@
             />
           </div>
           <div class="modal-footer">
-            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button class="btn btn-secondary" data-bs-dismiss="modal">
+              Cancel
+            </button>
             <button class="btn btn-primary" @click="submitResetPassword">
               Reset
             </button>
@@ -132,30 +153,32 @@ export default {
 
     // ✅ Disable account
     async disableAccount(student) {
-      if (!confirm(`Disable account for User ID ${student.user_id}?`)) return;
+      if (!confirm(`Are you sure you want to disable User ID ${student.user_id}?`))
+        return;
       try {
         const res = await axios.put(
           `http://localhost:3001/users/${student.user_id}/disable`
         );
-        alert(res.data.message || "Account disabled successfully");
+        alert(res.data.message || "Account disabled successfully.");
         this.fetchStudents();
       } catch (err) {
-        console.error(err);
+        console.error("Error disabling account:", err);
         alert(err.response?.data?.error || "Failed to disable account.");
       }
     },
 
     // ✅ Enable account
     async enableAccount(student) {
-      if (!confirm(`Enable account for User ID ${student.user_id}?`)) return;
+      if (!confirm(`Are you sure you want to enable User ID ${student.user_id}?`))
+        return;
       try {
         const res = await axios.put(
           `http://localhost:3001/users/${student.user_id}/enable`
         );
-        alert(res.data.message || "Account enabled successfully");
+        alert(res.data.message || "Account enabled successfully.");
         this.fetchStudents();
       } catch (err) {
-        console.error(err);
+        console.error("Error enabling account:", err);
         alert(err.response?.data?.error || "Failed to enable account.");
       }
     },
@@ -183,7 +206,7 @@ export default {
         return;
       }
       if (this.newPassword.length < 6) {
-        alert("Password must be at least 6 characters long");
+        alert("Password must be at least 6 characters long.");
         return;
       }
 
@@ -196,7 +219,7 @@ export default {
         this.resetPasswordModal.hide();
         this.fetchStudents();
       } catch (err) {
-        console.error(err);
+        console.error("Error resetting password:", err);
         alert(err.response?.data?.error || "Failed to reset password.");
       }
     },
@@ -207,5 +230,8 @@ export default {
 <style scoped>
 .table-container {
   overflow-x: auto;
+}
+.badge {
+  font-size: 0.9rem;
 }
 </style>
