@@ -21,7 +21,6 @@
             <th>Gender</th>
             <th>Email</th>
             <th>Role</th>
-            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -33,29 +32,19 @@
             <td>{{ student.full_name }}</td>
             <td>{{ student.gender }}</td>
             <td>{{ student.email }}</td>
-            <td>{{ student.role }}</td>
-            <td>
-              <span
-                class="badge"
-                :class="student.is_disabled ? 'bg-danger' : 'bg-success'"
-              >
-                {{ student.is_disabled ? 'Disabled' : 'Active' }}
-              </span>
-            </td>
+            <td class="text-capitalize">{{ student.role }}</td>
 
             <td>
               <div class="d-flex gap-2 justify-content-center">
                 <button
                   class="btn btn-sm btn-warning"
                   @click="disableAccount(student)"
-                  :disabled="student.is_disabled"
                 >
                   Disable
                 </button>
                 <button
                   class="btn btn-sm btn-success"
                   @click="enableAccount(student)"
-                  :disabled="!student.is_disabled"
                 >
                   Enable
                 </button>
@@ -71,7 +60,7 @@
 
           <!-- No students found -->
           <tr v-if="students.length === 0">
-            <td colspan="8" class="text-muted fst-italic py-4">
+            <td colspan="7" class="text-muted fst-italic py-4">
               No students found for this course
             </td>
           </tr>
@@ -230,8 +219,5 @@ export default {
 <style scoped>
 .table-container {
   overflow-x: auto;
-}
-.badge {
-  font-size: 0.9rem;
 }
 </style>
